@@ -1,0 +1,7 @@
+Flask-SQLAlchemy
+Flask
+Flask-Security
+Flask-Admin
+Flask-Script
+Flask-WTF
+pil

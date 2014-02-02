@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+{%- with messages = get_flashed_messages(with_categories=true) -%}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{%- endwith %}
+
+<form role="form" action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+  <div class="form-group {% if login_user_form.email.errors %}has-error{% endif %}">
+    {{ login_user_form.email.label(class="control-label") }}
+    {{ login_user_form.email(class="form-control", placeholder="Adresse email") }}
+    {% if login_user_form.email.errors %}
+      <span class="help-block">{{ login_user_form.email.errors[0] }}</span>
+    {% endif %}
+  </div>
+  <div class="form-group {% if login_user_form.password.errors %}has-error{% endif %}">
+    {{ login_user_form.password.label(class="control-label") }}
+    {{ login_user_form.password(class="form-control", placeholder="Mot de passe") }}
+    {% if login_user_form.password.errors %}
+      <span class="help-block">{{ login_user_form.password.errors[0] }}</span>
+    {% endif %}
+  </div>
+  <div class="checkbox">
+      {{ login_user_form.remember }} {{ login_user_form.remember.label }}
+  </div>
+  {{ login_user_form.next }}
+  {{ login_user_form.hidden_tag() }}
+  <button type="submit" class="btn btn-default">Se connecter</button>
+</form>
+
+{% endblock %}
+

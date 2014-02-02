@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<!--
+/*
+ * Derived from:
+ *
+ * Bootstrap Image Gallery Demo 3.0.0
+ * https://github.com/blueimp/Bootstrap-Image-Gallery
+ *
+ * Copyright 2013, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+-->
+<html lang="en">
+<head>
+  <!--[if IE]>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <![endif]-->
+  <meta charset="utf-8">
+  <title>photos.bulte.net</title>
+  <meta name="description" content="Gallery">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/blueimp-gallery.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-image-gallery.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/demo.css') }}"></head>
+<body>
+  <div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-fixed-top .navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">photos.bulte.net</a>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        {% if menu %}
+          <ul class="nav navbar-nav">
+            {% for mk, mv in menu.items() %}
+              {% if mv.keys() | count > 0 %}
+                <li class="dropdown">
+                  <a href="/{{ mk }}" class="dropdown-toggle" data-toggle="dropdown">
+                    {{ mk }} <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    {% for mk2, mv2 in mv.items() %}
+                      {% if mv2.keys() | count > 0 %}
+                        <li class="dropdown-submenu">
+                          <a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a>
+                          <ul class="dropdown-menu">
+                            {% for mk3, mv3 in mv2.items() %}
+                              <li><a href="/{{ mk }}/{{ mk2 }}/{{ mk3 }}">{{ mk3 }}</a></li>
+                            {% endfor %}
+                          </ul>
+                        </li>
+                      {% else %}
+                        <li><a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a></li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </li>
+              {% else %}
+                <li><a href="/{{ mk }}">{{ mk }}</a></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <ul class="nav navbar-nav navbar-right">
+          {% if current_user.is_authenticated() %}
+            <li><a href="{{ url_for_security('logout') }}">Déconnexion ({{ current_user.email }})</a></li>
+          {% else %}
+            <li><a href="{{ url_for_security('login') }}">Se connecter</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    {% block body %}{% endblock %}
+  </div>
+
+  {% block subbody %}{% endblock %}
+
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <!-- Bootstrap JS is not required, but included for the responsive demo navigation and button states -->
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.blueimp-gallery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap-image-gallery.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+</body>
+</html>
