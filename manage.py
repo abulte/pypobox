@@ -98,7 +98,7 @@ def initdb():
 @manager.command
 def create_user():
     db.create_all()
-    user_datastore.create_user(email='alexandre@bulte.net', password='ear685uf')
+    user_datastore.create_user(email='alexandre@bulte.net', password='alexandre')
     db.session.commit()
 
 if __name__ == "__main__":
