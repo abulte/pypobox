@@ -5,12 +5,13 @@ import sys
 import shelve
 from PIL import Image
 
-from flask.ext.script import Manager
+from flask.ext.script import Server, Manager
 
 from webapp import app, db, user_datastore
 from webapp.models import Photo
 
 manager = Manager(app)
+manager.add_command("runserver", Server(host="0.0.0.0"))
 
 ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png']
 
