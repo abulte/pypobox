@@ -27,6 +27,7 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-image-gallery.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/demo.css') }}"></head>
 <body>
+  {% if false %}
   <div class="navbar navbar-default navbar-fixed-top navbar-inverse">
     <div class="container">
       <div class="navbar-header">
@@ -78,13 +79,52 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
-  <div class="container">
-    {% block body %}{% endblock %}
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav">
+        <li class="sidebar-brand"><a href="/">photos.bulte.net</a></li>
+
+        {% for mk, mv in menu | dictsort %}
+          {% if mv.keys() | count > 0 %}
+            <li>
+              <a href="/{{ mk }}">{{ mk }}</a>
+              <ul class="nested-sidebar-nav">
+                {% for mk2, mv2 in mv | dictsort %}
+                  {% if mv2.keys() | count > 0 %}
+                    <li>
+                      <a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a>
+                      <ul class="nested-sidebar-nav">
+                        {% for mk3, mv3 in mv2 | dictsort %}
+                          <li><a href="/{{ mk }}/{{ mk2 }}/{{ mk3 }}">{{ mk3 }}</a></li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                  {% else %}
+                    <li><a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </li>
+          {% else %}
+            <li><a href="/{{ mk }}">{{ mk }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+      </ul>
+    </div>
+
+    <div id="page-content-wrapper">
+      <div class="container">
+        {% block body %}{% endblock %}
+      </div>
+
+      {% block subbody %}{% endblock %}
+    </div>
   </div>
-
-  {% block subbody %}{% endblock %}
-
   <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
   <!-- Bootstrap JS is not required, but included for the responsive demo navigation and button states -->
   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>

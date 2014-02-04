@@ -48,13 +48,8 @@ class Photo(db.Model):
     rpath = db.Column(db.String(), unique=True)
     path = db.Column(db.String(), unique=True)
     name = db.Column(db.String())
+    taken = db.Column(db.DateTime())
     thumb_path = db.Column(db.String(), unique=True)
-
-    def __init__(self, rpath, path, name, thumb_path):
-        self.rpath = rpath
-        self.path = path
-        self.name = name
-        self.thumb_path = thumb_path
 
     def __repr__(self):
         return '<Photo %r>' % self.path
@@ -70,4 +65,16 @@ class Album(db.Model):
 
     def __repr__(self):
         return '<Album %r>' % self.name
+
+class Menu(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
+    level = db.Column(db.Integer)
+    name = db.Column(db.String())
+    children = db.relationship("Menu",
+                backref=db.backref('parent', remote_side=[id])
+            )
+
+    def __repr__(self):
+        return '<Menu %r>' % self.name
 

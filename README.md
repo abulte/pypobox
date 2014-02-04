@@ -5,11 +5,11 @@ PY PhOto BOX - your personal photo sharing and hosting site, in python
 
 #### Quickstart
 
-Edit `webapp/__init__.py` and set `PHOTOS_PATH` and `THUMBS_PATH` values. Edit `manage.py` and modify `create_user` with your desired email address and password.
+Edit `webapp/__init__.py` and set `PHOTOS_PATH` and `THUMBS_PATH` values.
 
     pip install -r requirements.txt
     python manage.py initdb
-    python manage.py create_user
+    python manage.py create_user <username> <password>
     python manage.py index
     python manage.py runserver
 
