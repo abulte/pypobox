@@ -13,7 +13,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 -->
-<html lang="en">
+<html lang="fr">
 <head>
   <!--[if IE]>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -136,5 +136,12 @@
   <script src="{{ url_for('static', filename='js/jquery.blueimp-gallery.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/bootstrap-image-gallery.js') }}"></script>
   <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+  <!-- Custom JavaScript for the Menu Toggle -->
+  <script>
+  $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("active");
+  });
+  </script>
 </body>
 </html>
