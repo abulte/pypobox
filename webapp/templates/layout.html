@@ -89,6 +89,11 @@
         <li class="sidebar-brand"><a href="/">photos.bulte.net</a></li>
 
         {% if menu %}
+          {% if not request.path.startswith('/albums') %}
+            <li><a href="{{ url_for('albums') }}"><strong>Voir les albums</strong></a></li>
+          {% else %}
+            <li><a href="{{ url_for('catch_all') }}"><strong>Voir l'arborescence</strong></a></li>
+          {% endif %}
           {% for mk, mv in menu | dictsort %}
             {% if mv.keys() | count > 0 %}
               <li>

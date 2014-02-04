@@ -43,6 +43,31 @@ admin.add_view(ModelView(Menu, db.session))
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 
+def get_album_menu():
+    albums = Album.query.order_by(Album.created.desc()).all()
+    menu = {}
+    for album in albums:
+        menu[album.name] = {}
+    return menu
+
+@app.route('/albums')
+@login_required
+def albums():
+    """ Show last albums """
+    albums = Album.query.order_by(Album.created.desc()).limit(30).all()
+    menu = get_album_menu()
+    title = u"Tous les albums"
+    return render_template('albums.html', albums=albums, menu=menu, title=title)
+
+@app.route('/albums/<album_id>')
+@login_required
+def album(album_id):
+    """ Show album and photos inside """
+    album = Album.query.filter_by(id=album_id).first_or_404()
+    menu = get_album_menu()
+    title = u"Les photos de l'album %s" % album.name
+    return render_template('index.html', photos=album.photos, menu=menu, title=title)
+
 @app.route('/thumbs/<path:path>')
 @login_required
 def thumbs(path):

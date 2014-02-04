@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<h3><a id="menu-toggle" href="#" class="btn btn-default"><i class="icon-reorder"></i></a> {{ title }}</h3>
+
+<!-- The container for the list of example images -->
+<div id="links">
+  {% for album in albums %}
+    {% if album.photos | count > 0 %}
+      {% set photo = album.photos[0]  %}
+      <a href="{{url_for('album', album_id=album.id)}}" title="{{ album.name }}">
+        <img src="/thumbs/{{ photo['thumb_path'] }}" alt="">
+        {{ album.name }}
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>
+<br>
+
+{% endblock %}

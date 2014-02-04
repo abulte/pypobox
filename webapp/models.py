@@ -7,6 +7,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from datetime import datetime
+
 from flask.ext.security import UserMixin, RoleMixin
 
 from webapp import db
@@ -59,9 +61,7 @@ class Album(db.Model):
     name = db.Column(db.String(), unique=True)
     photos = db.relationship('Photo', secondary=photos_albums,
         backref=db.backref('albums', lazy='dynamic'))
-
-    def __init__(self, name):
-        self.name = name
+    created = db.Column(db.DateTime(), default=datetime.now())
 
     def __repr__(self):
         return '<Album %r>' % self.name
