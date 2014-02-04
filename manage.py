@@ -134,8 +134,12 @@ def index():
 
     # TODO: remove obsolete items
 
+    print
+    print 'Generating thumbnails...'
     files = get_files_r()
     saved_files = generate_thumbnails(files)
+
+    print 'Saving files to DB...'
     for photo in saved_files:
         # relative path rpath is the 'unique key'
         existing = Photo.query.filter_by(rpath=photo['rpath']).first()
@@ -149,7 +153,10 @@ def index():
             existing.taken = photo['date']
             existing.thumb_path = photo['thumb_path']
             db.session.commit()
+
+    print 'Building menu...'
     build_menu()
+
     print 'Photos are indexed.'
 
 @manager.command

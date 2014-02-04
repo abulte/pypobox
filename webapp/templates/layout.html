@@ -88,31 +88,36 @@
       <ul class="sidebar-nav">
         <li class="sidebar-brand"><a href="/">photos.bulte.net</a></li>
 
-        {% for mk, mv in menu | dictsort %}
-          {% if mv.keys() | count > 0 %}
-            <li>
-              <a href="/{{ mk }}">{{ mk }}</a>
-              <ul class="nested-sidebar-nav">
-                {% for mk2, mv2 in mv | dictsort %}
-                  {% if mv2.keys() | count > 0 %}
-                    <li>
-                      <a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a>
-                      <ul class="nested-sidebar-nav">
-                        {% for mk3, mv3 in mv2 | dictsort %}
-                          <li><a href="/{{ mk }}/{{ mk2 }}/{{ mk3 }}">{{ mk3 }}</a></li>
-                        {% endfor %}
-                      </ul>
-                    </li>
-                  {% else %}
-                    <li><a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a></li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-            </li>
-          {% else %}
-            <li><a href="/{{ mk }}">{{ mk }}</a></li>
-          {% endif %}
-        {% endfor %}
+        {% if menu %}
+          {% for mk, mv in menu | dictsort %}
+            {% if mv.keys() | count > 0 %}
+              <li>
+                <a href="/{{ mk }}">{{ mk }}</a>
+                <ul class="nested-sidebar-nav">
+                  {% for mk2, mv2 in mv | dictsort %}
+                    {% if mv2.keys() | count > 0 %}
+                      <li>
+                        <a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a>
+                        <ul class="nested-sidebar-nav">
+                          {% for mk3, mv3 in mv2 | dictsort %}
+                            <li><a href="/{{ mk }}/{{ mk2 }}/{{ mk3 }}">{{ mk3 }}</a></li>
+                          {% endfor %}
+                        </ul>
+                      </li>
+                    {% else %}
+                      <li><a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a></li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </li>
+            {% else %}
+              <li><a href="/{{ mk }}">{{ mk }}</a></li>
+            {% endif %}
+          {% endfor %}
+          <li><a href="{{ url_for_security('logout') }}">Se déconnecter</a></li>
+        {% else %}
+          <li><a href="{{ url_for_security('login') }}">Se connecter</a></li>
+        {% endif %}
 
       </ul>
     </div>
