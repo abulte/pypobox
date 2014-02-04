@@ -5,3 +5,4 @@ Flask-Admin
 Flask-Script
 Flask-WTF
 pil
+ExifRead
