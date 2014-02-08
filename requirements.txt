@@ -6,4 +6,3 @@ Flask-Script
 Flask-WTF
 pil
 ExifRead
-gunicorn
