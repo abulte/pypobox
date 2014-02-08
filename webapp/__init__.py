@@ -9,7 +9,7 @@
 
 import os
 
-from flask import Flask, abort, render_template, send_file
+from flask import Flask, abort, render_template, send_file, url_for, jsonify, request
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
@@ -43,11 +43,36 @@ admin.add_view(ModelView(Menu, db.session))
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 
+@app.route('/add_to_album', methods=['POST'])
+@login_required
+def add_to_album():
+    """ Add photos to album """
+    photos = request.form.getlist('photos[]')
+    album_name = request.form.get('album_name')
+    existing = request.form.get('existing')
+    app.logger.debug(request.form)
+    app.logger.debug(photos)
+    if existing == 'true':
+        album = Album.query.filter_by(id=album_name).first_or_404()
+    else:
+        album = Album(name=album_name)
+        db.session.add(album)
+    for photo_id in photos:
+        # TODO check access rights
+        photo_obj = Photo.query.filter_by(id=photo_id).first_or_404()
+        if not album in photo_obj.albums:
+            photo_obj.albums.append(album)
+    db.session.commit()
+    return jsonify(status='OK')
+
+def get_albums():
+    return Album.query.order_by(Album.created.desc()).all()
+
 def get_album_menu():
-    albums = Album.query.order_by(Album.created.desc()).all()
+    albums = get_albums()
     menu = {}
     for album in albums:
-        menu[album.name] = {}
+        menu[album.name] = url_for('album', album_id=album.id)
     return menu
 
 @app.route('/albums')
@@ -57,7 +82,7 @@ def albums():
     albums = Album.query.order_by(Album.created.desc()).limit(30).all()
     menu = get_album_menu()
     title = u"Tous les albums"
-    return render_template('albums.html', albums=albums, menu=menu, title=title)
+    return render_template('albums.html', albums=albums, album_menu=menu, title=title)
 
 @app.route('/albums/<album_id>')
 @login_required
@@ -66,7 +91,7 @@ def album(album_id):
     album = Album.query.filter_by(id=album_id).first_or_404()
     menu = get_album_menu()
     title = u"Les photos de l'album %s" % album.name
-    return render_template('index.html', photos=album.photos, menu=menu, title=title)
+    return render_template('index.html', photos=album.photos, album_menu=menu, title=title)
 
 @app.route('/thumbs/<path:path>')
 @login_required
@@ -104,7 +129,8 @@ def catch_all(path):
     parent_items = Menu.query.filter_by(level=0).all()
     menu = menu_item(parent_items, menu)
 
-    return render_template('index.html', photos=photos, menu=menu, title=title)
+    app.logger.debug(get_album_menu())
+    return render_template('index.html', photos=photos, menu=menu, title=title, albums_list=get_albums())
 
 def menu_item(root_items, menu):
     for item in root_items:

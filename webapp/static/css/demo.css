@@ -207,3 +207,13 @@ a:hover {
   }
 
 }
+
+/* ALB */
+
+.sidebar-nav .divider {
+  height: 1px;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #999;
+}
+

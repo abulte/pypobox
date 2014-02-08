@@ -27,60 +27,6 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-image-gallery.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/demo.css') }}"></head>
 <body>
-  {% if false %}
-  <div class="navbar navbar-default navbar-fixed-top navbar-inverse">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-fixed-top .navbar-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/">photos.bulte.net</a>
-      </div>
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        {% if menu %}
-          <ul class="nav navbar-nav">
-            {% for mk, mv in menu.items() %}
-              {% if mv.keys() | count > 0 %}
-                <li class="dropdown">
-                  <a href="/{{ mk }}" class="dropdown-toggle" data-toggle="dropdown">
-                    {{ mk }} <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    {% for mk2, mv2 in mv.items() %}
-                      {% if mv2.keys() | count > 0 %}
-                        <li class="dropdown-submenu">
-                          <a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a>
-                          <ul class="dropdown-menu">
-                            {% for mk3, mv3 in mv2.items() %}
-                              <li><a href="/{{ mk }}/{{ mk2 }}/{{ mk3 }}">{{ mk3 }}</a></li>
-                            {% endfor %}
-                          </ul>
-                        </li>
-                      {% else %}
-                        <li><a href="/{{ mk }}/{{ mk2 }}">{{ mk2 }}</a></li>
-                      {% endif %}
-                    {% endfor %}
-                  </ul>
-                </li>
-              {% else %}
-                <li><a href="/{{ mk }}">{{ mk }}</a></li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        {% endif %}
-        <ul class="nav navbar-nav navbar-right">
-          {% if current_user.is_authenticated() %}
-            <li><a href="{{ url_for_security('logout') }}">Déconnexion ({{ current_user.email }})</a></li>
-          {% else %}
-            <li><a href="{{ url_for_security('login') }}">Se connecter</a></li>
-          {% endif %}
-        </ul>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
   <div id="wrapper">
 
     <!-- Sidebar -->
@@ -88,12 +34,15 @@
       <ul class="sidebar-nav">
         <li class="sidebar-brand"><a href="/">photos.bulte.net</a></li>
 
-        {% if menu %}
+        {% if current_user.is_authenticated() %}
           {% if not request.path.startswith('/albums') %}
             <li><a href="{{ url_for('albums') }}"><strong>Voir les albums</strong></a></li>
           {% else %}
             <li><a href="{{ url_for('catch_all') }}"><strong>Voir l'arborescence</strong></a></li>
           {% endif %}
+          <li class="divider"></li>
+        {% endif %}
+        {% if menu %}
           {% for mk, mv in menu | dictsort %}
             {% if mv.keys() | count > 0 %}
               <li>
@@ -115,10 +64,16 @@
                   {% endfor %}
                 </ul>
               </li>
-            {% else %}
-              <li><a href="/{{ mk }}">{{ mk }}</a></li>
             {% endif %}
           {% endfor %}
+        {% elif album_menu %}
+          {% for name, link in album_menu | dictsort %}
+            <li><a href="{{ link }}">{{ name }}</a></li>
+          {% endfor %}
+        {% endif %}
+
+        <li class="divider"></li>
+        {% if current_user.is_authenticated() %}
           <li><a href="{{ url_for_security('logout') }}">Se déconnecter</a></li>
         {% else %}
           <li><a href="{{ url_for_security('login') }}">Se connecter</a></li>
@@ -143,10 +98,7 @@
   <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
   <!-- Custom JavaScript for the Menu Toggle -->
   <script>
-  $("#menu-toggle").click(function(e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("active");
-  });
+
   </script>
 </body>
 </html>

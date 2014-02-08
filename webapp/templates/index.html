@@ -12,19 +12,27 @@
   </div>
   <div class="btn-group" data-toggle="buttons">
     <label class="btn btn-success btn-lg"> <i class="glyphicon glyphicon-leaf"></i>
-      <input id="borderless-checkbox" type="checkbox">Borderless</label>
+      <input id="borderless-checkbox" type="checkbox">Borderless
+    </label>
     <label class="btn btn-primary btn-lg">
       <i class="glyphicon glyphicon-fullscreen"></i>
-      <input id="fullscreen-checkbox" type="checkbox">Fullscreen</label>
+      <input id="fullscreen-checkbox" type="checkbox">Fullscreen
+    </label>
+  </div>
+  <div class="form-group">
+    <button disabled="disabled" id="add-to-album-button" data-toggle="modal" data-target="#add-to-album-modal" type="button" class="btn btn-info btn-lg"> <i class="glyphicon glyphicon-plus-sign"></i>
+      Ajouter à un album
+    </button>
   </div>
 </form>
 <br>
 <!-- The container for the list of example images -->
 <div id="links">
   {% for photo in photos %}
-    <a href="{{ photo['rpath'] }}" title="{{ photo['name'] }}" data-gallery>
-      <img src="/thumbs/{{ photo['thumb_path'] }}" alt="">
+    <a href="{{ photo.rpath }}" title="{{ photo.name }}" data-gallery>
+      <img src="/thumbs/{{ photo.thumb_path }}" alt="">
     </a>
+    <input type="checkbox" value="{{ photo.id }}" class="select-photo" />
   {% endfor %}
 </div>
 <br>
@@ -53,13 +61,13 @@
           <h4 class="modal-title"></h4>
         </div>
         <div class="modal-body next"></div>
-        <div class="modal-footer">
+        <div class="modal-footer photo-nav">
           <button type="button" class="btn btn-default pull-left prev">
             <i class="glyphicon glyphicon-chevron-left"></i>
-            Previous
+            Précédent
           </button>
-          <button type="button" class="btn btn-primary next">
-            Next
+          <button type="button" class="btn btn-primary pull-right next">
+            Suivant
             <i class="glyphicon glyphicon-chevron-right"></i>
           </button>
         </div>
@@ -67,5 +75,39 @@
     </div>
   </div>
 </div>
+
+<!-- the modal for add to album -->
+<div class="modal fade" id="add-to-album-modal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Ajouter à un album</h4>
+      </div>
+
+      <form role="form" id="add-to-album-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="select-existing-album">Ajouter à un album existant</label>
+            <select id="select-existing-album" class="form-control" name="existing_album_name">
+                <option value="" selected="selected">-----</option>
+              {% for album in albums_list %}
+                <option value="{{ album.id }}">{{ album.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="create-new-album">Créer un nouvel album</label>
+            <input type="text" class="form-control" id="create-new-album" placeholder="Nom de l'album">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="add-to-album-submit" class="btn btn-success">Ajouter à l'album</button>
+        </div>
+      </form>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 {% endblock %}
