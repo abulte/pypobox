@@ -16,7 +16,7 @@ from datetime import datetime
 from flask.ext.script import Server, Manager
 
 from webapp import app, db, user_datastore
-from webapp.models import Photo, Menu
+from webapp.models import Photo, Menu, Role
 
 manager = Manager(app)
 manager.add_command("runserver", Server(host="0.0.0.0"))
@@ -168,12 +168,19 @@ def initdb(clean=False):
     print "DB inited."
 
 @manager.command
-def create_user(name, password):
+def create_user(email, password, admin=False):
     """ Create a test user """
     db.create_all()
-    user_datastore.create_user(email=name, password=password)
+    user = user_datastore.create_user(email=email, password=password)
     db.session.commit()
     print "User created."
+    if admin:
+        admin_role = Role.query.filter_by(name='admin').first()
+        if admin_role is None:
+            admin_role = Role(name='admin', description='Administrators')
+            db.session.add(admin_role)
+        admin_role.users.append(user)
+        db.session.commit()
 
 if __name__ == "__main__":
     manager.run()

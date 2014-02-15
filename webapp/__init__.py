@@ -13,8 +13,9 @@ from flask import Flask, abort, render_template, send_file, url_for, jsonify, re
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required
+from flask.ext.security import Security, SQLAlchemyUserDatastore, login_required, current_user
 from flask_mail import Mail
+from flask.ext.principal import Permission, RoleNeed
 
 app = Flask(__name__)
 
@@ -33,15 +34,22 @@ mail = Mail(app)
 
 from .models import User, Album, Photo, Role, Menu
 
-admin = Admin(app, name='BPhotos')
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Photo, db.session))
-admin.add_view(ModelView(Album, db.session))
-admin.add_view(ModelView(Role, db.session))
-admin.add_view(ModelView(Menu, db.session))
-
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
+admin_permission = Permission(RoleNeed('admin'))
+
+admin = Admin(app, name='BPhotos')
+
+class MyAdminModelView(ModelView):
+    def is_accessible(self):
+        return admin_permission.can()
+
+admin.add_view(MyAdminModelView(User, db.session))
+admin.add_view(MyAdminModelView(Photo, db.session))
+admin.add_view(MyAdminModelView(Album, db.session))
+admin.add_view(MyAdminModelView(Role, db.session))
+admin.add_view(MyAdminModelView(Menu, db.session))
+
 
 @app.route('/add_to_album', methods=['POST'])
 @login_required
@@ -50,8 +58,6 @@ def add_to_album():
     photos = request.form.getlist('photos[]')
     album_name = request.form.get('album_name')
     existing = request.form.get('existing')
-    app.logger.debug(request.form)
-    app.logger.debug(photos)
     if existing == 'true':
         album = Album.query.filter_by(id=album_name).first_or_404()
     else:
@@ -89,9 +95,12 @@ def albums():
 def album(album_id):
     """ Show album and photos inside """
     album = Album.query.filter_by(id=album_id).first_or_404()
-    menu = get_album_menu()
-    title = u"Les photos de l'album %s" % album.name
-    return render_template('index.html', photos=album.photos, album_menu=menu, title=title)
+    if admin_permission.can() or current_user in album.users:
+        menu = get_album_menu()
+        title = u"Les photos de l'album %s" % album.name
+        return render_template('index.html', photos=album.photos, album_menu=menu, title=title)
+    else:
+        abort(403)
 
 @app.route('/thumbs/<path:path>')
 @login_required
@@ -105,7 +114,7 @@ def thumbs(path):
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-@login_required
+@admin_permission.require()
 def catch_all(path):
     photos_path = app.config.get('PHOTOS_PATH')
     req_path = '%s/%s' % (photos_path, path)
@@ -129,7 +138,6 @@ def catch_all(path):
     parent_items = Menu.query.filter_by(level=0).all()
     menu = menu_item(parent_items, menu)
 
-    app.logger.debug(get_album_menu())
     return render_template('index.html', photos=photos, menu=menu, title=title, albums_list=get_albums())
 
 def menu_item(root_items, menu):

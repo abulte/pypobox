@@ -56,12 +56,19 @@ class Photo(db.Model):
     def __repr__(self):
         return '<Photo %r>' % self.path
 
+albums_users = db.Table('albums_users',
+    db.Column('album_id', db.Integer, db.ForeignKey('album.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+)
+
 class Album(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), unique=True)
     photos = db.relationship('Photo', secondary=photos_albums,
         backref=db.backref('albums', lazy='dynamic'))
     created = db.Column(db.DateTime(), default=datetime.now())
+    users = db.relationship('User', secondary=albums_users,
+        backref=db.backref('albums', lazy='dynamic'))
 
     def __repr__(self):
         return '<Album %r>' % self.name
